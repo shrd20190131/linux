@@ -1,0 +1,709 @@
+/dts-v1/;
+
+#include "aspeed-g5.dtsi"
+#include <dt-bindings/gpio/aspeed-gpio.h>
+
+/ {
+	model = "USI JBOF BMC";
+	compatible = "usi,jbof-bmc", "aspeed,ast2500";
+
+	chosen {
+		stdout-path = &uart5;
+		bootargs = "console=ttyS4,115200 earlyprintk";
+	};
+
+	memory {
+		reg = <0x80000000 0x20000000>;
+	};
+
+        leds {
+                compatible = "gpio-leds";
+
+                boot {
+                        gpios = <&gpio ASPEED_GPIO(AC, 5) GPIO_ACTIVE_HIGH>;
+                        default-state = "on";
+                };
+                fault {
+                        gpios = <&gpio ASPEED_GPIO(S, 0) GPIO_ACTIVE_LOW>;
+                        default-state = "off";
+                };
+                act0 {
+                        gpios = <&gpio ASPEED_GPIO(N, 2) GPIO_ACTIVE_LOW>;
+                        default-state = "off";
+                };
+                act1 {
+                        gpios = <&gpio ASPEED_GPIO(N, 3) GPIO_ACTIVE_LOW>;
+                        default-state = "off";
+                };
+                act2 {
+                        gpios = <&gpio ASPEED_GPIO(N, 4) GPIO_ACTIVE_LOW>;
+                        default-state = "off";
+                };
+                act3 {
+                        gpios = <&gpio ASPEED_GPIO(N, 5) GPIO_ACTIVE_LOW>;
+                        default-state = "off";
+                };
+                act4 {
+                        gpios = <&gpio ASPEED_GPIO(N, 6) GPIO_ACTIVE_LOW>;
+                        default-state = "off";
+                };
+                act5 {
+                        gpios = <&gpio ASPEED_GPIO(N, 7) GPIO_ACTIVE_LOW>;
+                        default-state = "off";
+                };
+                act6 {
+                        gpios = <&gpio ASPEED_GPIO(O, 2) GPIO_ACTIVE_LOW>;
+                        default-state = "off";
+                };
+                act7 {
+                        gpios = <&gpio ASPEED_GPIO(O, 3) GPIO_ACTIVE_LOW>;
+                        default-state = "off";
+                };
+                act8 {
+                        gpios = <&gpio ASPEED_GPIO(O, 4) GPIO_ACTIVE_LOW>;
+                        default-state = "off";
+                };
+                act9 {
+                        gpios = <&gpio ASPEED_GPIO(O, 5) GPIO_ACTIVE_LOW>;
+                        default-state = "off";
+                };
+                act10 {
+                        gpios = <&gpio ASPEED_GPIO(O, 6) GPIO_ACTIVE_LOW>;
+                        default-state = "off";
+                };
+                act11 {
+                        gpios = <&gpio ASPEED_GPIO(O, 7) GPIO_ACTIVE_LOW>;
+                        default-state = "off";
+                };
+        };
+
+};
+
+&fmc {
+	status = "okay";
+	flash@0 {
+		status = "okay";
+		m25p,fast-read;
+#include "usi-flash-layout.dtsi"
+	};
+};
+
+&spi1 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_spi1_default>;
+
+	flash@0 {
+		status = "okay";
+		label = "pnor";
+		m25p,fast-read;
+	};
+};
+
+&spi2 {
+	status = "okay";
+};
+
+&uart5 {
+	status = "okay";
+};
+
+&mac0 {
+	status = "okay";
+
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_rgmii1_default &pinctrl_mdio1_default>;
+};
+
+&mac1 {
+	status = "okay";
+
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_rgmii2_default &pinctrl_mdio2_default>;
+};
+
+&i2c0 {
+	status = "okay";
+
+	lm75@48 {
+		compatible = "national,lm75";
+		reg = <0x48>;
+	};
+	lm75@49 {
+		compatible = "national,lm75";
+		reg = <0x49>;
+	};
+	lm75@4a {
+		compatible = "national,lm75";
+		reg = <0x4a>;
+	};
+	rtc@68 {
+		compatible = "ti,bq32000";
+		reg = <0x68>;
+	};
+};
+
+&i2c1 {
+	status = "okay";
+
+};
+
+&i2c2 {
+	status = "okay";
+
+};
+
+&i2c3 {
+	status = "okay";
+
+	i2c-switch@70 {
+		compatible = "nxp,pca9546";
+		reg = <0x70>;
+		i2c-mux-idle-disconnect = "true";
+
+		i2c@0 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <0>;
+
+			ina226@40 {
+				compatible = "ti,ina226";
+				reg = <0x40>;
+				shunt-resistor = <2000>;
+			};
+			ina226@41 {
+				compatible = "ti,ina226";
+				reg = <0x41>;
+				shunt-resistor = <1000>;
+			};
+		};
+		i2c@1 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <1>;
+
+			adt7470@2c {
+				compatible = "adi,adt7470";
+				reg = <0x2c>;
+			};
+			adt7470@2f {
+				compatible = "adi,adt7470";
+				reg = <0x2f>;
+			};
+		};
+		i2c@2 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <2>;
+
+			adt7470@2c {
+				compatible = "adi,adt7470";
+				reg = <0x2c>;
+			};
+			adt7470@2f {
+				compatible = "adi,adt7470";
+				reg = <0x2f>;
+			};
+		};
+		i2c@3 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <3>;
+
+			ina226@45 {
+				compatible = "ti,ina226";
+				reg = <0x45>;
+				shunt-resistor = <1000>;
+			};
+			eeprom@57 {
+				compatible = "atmel,24c256";
+				reg = <0x57>;
+				pagesize = <64>;
+			};
+		};
+	};
+};
+
+&i2c4 {
+	status = "okay";
+
+	i2c-switch@70 {
+		compatible = "nxp,pca9546";
+		reg = <0x70>;
+		i2c-mux-idle-disconnect = "true";
+
+		i2c@0 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <0>;
+
+			ina226@40 {
+				compatible = "ti,ina226";
+				reg = <0x40>;
+				shunt-resistor = <20000>;
+			};
+			ina226@45 {
+				compatible = "ti,ina226";
+				reg = <0x45>;
+				shunt-resistor = <20000>;
+			};
+		};
+		i2c@1 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <1>;
+
+			ina226@40 {
+				compatible = "ti,ina226";
+				reg = <0x40>;
+				shunt-resistor = <20000>;
+			};
+			ina226@45 {
+				compatible = "ti,ina226";
+				reg = <0x45>;
+				shunt-resistor = <20000>;
+			};
+		};
+		i2c@2 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <2>;
+
+			ina226@40 {
+				compatible = "ti,ina226";
+				reg = <0x40>;
+				shunt-resistor = <20000>;
+			};
+			ina226@45 {
+				compatible = "ti,ina226";
+				reg = <0x45>;
+				shunt-resistor = <20000>;
+			};
+		};
+		i2c@3 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <3>;
+
+			ina226@40 {
+				compatible = "ti,ina226";
+				reg = <0x40>;
+				shunt-resistor = <20000>;
+			};
+			ina226@45 {
+				compatible = "ti,ina226";
+				reg = <0x45>;
+				shunt-resistor = <20000>;
+			};
+		};
+	};
+};
+
+&i2c5 {
+	status = "okay";
+
+	i2c-switch@70 {
+		compatible = "nxp,pca9546";
+		reg = <0x70>;
+		i2c-mux-idle-disconnect = "true";
+
+		i2c@0 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <0>;
+
+			ina226@40 {
+				compatible = "ti,ina226";
+				reg = <0x40>;
+				shunt-resistor = <20000>;
+			};
+			ina226@45 {
+				compatible = "ti,ina226";
+				reg = <0x45>;
+				shunt-resistor = <20000>;
+			};
+		};
+		i2c@1 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <1>;
+
+			ina226@40 {
+				compatible = "ti,ina226";
+				reg = <0x40>;
+				shunt-resistor = <20000>;
+			};
+			ina226@45 {
+				compatible = "ti,ina226";
+				reg = <0x45>;
+				shunt-resistor = <20000>;
+			};
+		};
+		i2c@2 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <2>;
+
+			ina226@40 {
+				compatible = "ti,ina226";
+				reg = <0x40>;
+				shunt-resistor = <20000>;
+			};
+			ina226@45 {
+				compatible = "ti,ina226";
+				reg = <0x45>;
+				shunt-resistor = <20000>;
+			};
+		};
+		i2c@3 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <3>;
+
+			ina226@40 {
+				compatible = "ti,ina226";
+				reg = <0x40>;
+				shunt-resistor = <20000>;
+			};
+			ina226@45 {
+				compatible = "ti,ina226";
+				reg = <0x45>;
+				shunt-resistor = <20000>;
+			};
+		};
+	};
+};
+
+&i2c6 {
+	status = "okay";
+
+	i2c-switch@70 {
+		compatible = "nxp,pca9546";
+		reg = <0x70>;
+		i2c-mux-idle-disconnect = "true";
+
+		i2c@0 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <0>;
+
+			ina226@40 {
+				compatible = "ti,ina226";
+				reg = <0x40>;
+				shunt-resistor = <20000>;
+			};
+			ina226@45 {
+				compatible = "ti,ina226";
+				reg = <0x45>;
+				shunt-resistor = <20000>;
+			};
+		};
+		i2c@1 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <1>;
+
+			ina226@40 {
+				compatible = "ti,ina226";
+				reg = <0x40>;
+				shunt-resistor = <20000>;
+			};
+			ina226@45 {
+				compatible = "ti,ina226";
+				reg = <0x45>;
+				shunt-resistor = <20000>;
+			};
+		};
+		i2c@2 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <2>;
+
+			ina226@40 {
+				compatible = "ti,ina226";
+				reg = <0x40>;
+				shunt-resistor = <20000>;
+			};
+			ina226@45 {
+				compatible = "ti,ina226";
+				reg = <0x45>;
+				shunt-resistor = <20000>;
+			};
+		};
+		i2c@3 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <3>;
+
+			ina226@40 {
+				compatible = "ti,ina226";
+				reg = <0x40>;
+				shunt-resistor = <20000>;
+			};
+			ina226@45 {
+				compatible = "ti,ina226";
+				reg = <0x45>;
+				shunt-resistor = <20000>;
+			};
+		};
+	};
+};
+
+&i2c7 {
+	status = "okay";
+
+};
+
+&i2c8 {
+	status = "okay";
+
+};
+
+&i2c9 {
+	status = "okay";
+
+};
+
+&i2c10 {
+	status = "okay";
+
+	ina226@40 {
+		compatible = "ti,ina226";
+		reg = <0x40>;
+		shunt-resistor = <20000>;
+	};
+	eeprom@57 {
+		compatible = "atmel,24c256";
+		reg = <0x57>;
+		pagesize = <64>;
+	};
+};
+
+&i2c11 {
+	status = "okay";
+
+};
+
+&i2c12 {
+	status = "okay";
+
+};
+
+&i2c13 {
+	status = "okay";
+
+};
+
+&gpio {
+    pin_gpio_ac1 {
+                gpio-hog;
+                gpios = <ASPEED_GPIO(AC, 1) GPIO_ACTIVE_HIGH>;
+                output-high;
+                line-name = "LIGHT_PEER_FLT_N";
+    };
+    pin_gpio_ac2 {
+                gpio-hog;
+                gpios = <ASPEED_GPIO(AC, 2) GPIO_ACTIVE_HIGH>;
+                output-high;
+                line-name = "BMC_I2C12_RSTN";
+    };
+    pin_gpio_ac3 {
+                gpio-hog;
+                gpios = <ASPEED_GPIO(AC, 3) GPIO_ACTIVE_HIGH>;
+                output-high;
+                line-name = "ARBITRATION_TX";
+    };
+    pin_gpio_ac4 {
+                gpio-hog;
+                gpios = <ASPEED_GPIO(AC, 4) GPIO_ACTIVE_HIGH>;
+                output-high;
+                line-name = "PCIE_RSTB";
+    };
+    pin_gpio_ac6 {
+                gpio-hog;
+                gpios = <ASPEED_GPIO(AC, 6) GPIO_ACTIVE_HIGH>;
+                output-high;
+                line-name = "BMC_I2C10_RSTN";
+    };
+    pin_gpio_ac7 {
+                gpio-hog;
+                gpios = <ASPEED_GPIO(AC, 7) GPIO_ACTIVE_HIGH>;
+                output-high;
+                line-name = "PSX_RSTB";
+    };
+    pin_gpio_r0 {
+                gpio-hog;
+                gpios = <ASPEED_GPIO(R, 0) GPIO_ACTIVE_HIGH>;
+                output-high;
+                line-name = "Cable0_Pwr_EN";
+    };
+    pin_gpio_r1 {
+                gpio-hog;
+                gpios = <ASPEED_GPIO(R, 1) GPIO_ACTIVE_HIGH>;
+                output-high;
+                line-name = "Cable1_Pwr_EN";
+    };
+    pin_gpio_r2 {
+                gpio-hog;
+                gpios = <ASPEED_GPIO(R, 2) GPIO_ACTIVE_HIGH>;
+                output-high;
+                line-name = "Cable2_Pwr_EN";
+    };
+    pin_gpio_r3 {
+                gpio-hog;
+                gpios = <ASPEED_GPIO(R, 3) GPIO_ACTIVE_HIGH>;
+                output-high;
+                line-name = "Cable3_Pwr_EN";
+    };
+    pin_gpio_r4 {
+                gpio-hog;
+                gpios = <ASPEED_GPIO(R, 4) GPIO_ACTIVE_HIGH>;
+                output-high;
+                line-name = "Cable4_Pwr_EN";
+    };
+    pin_gpio_r5 {
+                gpio-hog;
+                gpios = <ASPEED_GPIO(R, 5) GPIO_ACTIVE_HIGH>;
+                output-high;
+                line-name = "Cable5_Pwr_EN";
+    };
+    pin_gpio_r6 {
+                gpio-hog;
+                gpios = <ASPEED_GPIO(R, 6) GPIO_ACTIVE_HIGH>;
+                output-high;
+                line-name = "Cable6_Pwr_EN";
+    };
+    pin_gpio_r7 {
+                gpio-hog;
+                gpios = <ASPEED_GPIO(R, 7) GPIO_ACTIVE_HIGH>;
+                output-high;
+                line-name = "Cable7_Pwr_EN";
+    };
+    pin_gpio_s2 {
+                gpio-hog;
+                gpios = <ASPEED_GPIO(S, 2) GPIO_ACTIVE_HIGH>;
+                output-high;
+                line-name = "AVS_ENB_N";
+    };
+    pin_gpio_s3 {
+                gpio-hog;
+                gpios = <ASPEED_GPIO(S, 3) GPIO_ACTIVE_HIGH>;
+                output-high;
+                line-name = "FLASH_RST";
+    };
+    pin_gpio_ab0 {
+                gpio-hog;
+                gpios = <ASPEED_GPIO(AB, 0) GPIO_ACTIVE_HIGH>;
+                output-high;
+                line-name = "Cable8_Pwr_EN";
+    };
+    pin_gpio_ab1 {
+                gpio-hog;
+                gpios = <ASPEED_GPIO(AB, 1) GPIO_ACTIVE_HIGH>;
+                output-high;
+                line-name = "Cable9_Pwr_EN";
+    };
+    pin_gpio_ab2 {
+                gpio-hog;
+                gpios = <ASPEED_GPIO(AB, 2) GPIO_ACTIVE_HIGH>;
+                output-high;
+                line-name = "Cable10_Pwr_EN";
+    };
+    pin_gpio_ab3 {
+                gpio-hog;
+                gpios = <ASPEED_GPIO(AB, 3) GPIO_ACTIVE_HIGH>;
+                output-high;
+                line-name = "Cable11_Pwr_EN";
+    };
+    pin_gpio_j0 {
+                gpio-hog;
+                gpios = <ASPEED_GPIO(J, 0) GPIO_ACTIVE_HIGH>;
+                output-high;
+                line-name = "BMC_FLASH_WP";
+    };
+    pin_gpio_j1 {
+                gpio-hog;
+                gpios = <ASPEED_GPIO(J, 1) GPIO_ACTIVE_HIGH>;
+                output-high;
+                line-name = "NC";
+    };
+    pin_gpio_j2 {
+                gpio-hog;
+                gpios = <ASPEED_GPIO(J, 2) GPIO_ACTIVE_HIGH>;
+                output-high;
+                line-name = "BMC_PSX_UPDATE_N";
+    };
+    pin_gpio_j3 {
+                gpio-hog;
+                gpios = <ASPEED_GPIO(J, 3) GPIO_ACTIVE_HIGH>;
+                output-high;
+                line-name = "NC";
+    };
+    pin_gpio_j4 {
+                gpio-hog;
+                gpios = <ASPEED_GPIO(J, 4) GPIO_ACTIVE_HIGH>;
+                output-high;
+                line-name = "DrMUX0_RST_N";
+    };
+    pin_gpio_j5 {
+                gpio-hog;
+                gpios = <ASPEED_GPIO(J, 5) GPIO_ACTIVE_HIGH>;
+                output-high;
+                line-name = "DrMUX1_RST_N";
+    };
+    pin_gpio_j6 {
+                gpio-hog;
+                gpios = <ASPEED_GPIO(J, 6) GPIO_ACTIVE_HIGH>;
+                output-high;
+                line-name = "DrMUX2_RST_N";
+    };
+    pin_gpio_j7 {
+                gpio-hog;
+                gpios = <ASPEED_GPIO(J, 7) GPIO_ACTIVE_HIGH>;
+                output-high;
+                line-name = "NC";
+    };
+    pin_gpio_o0 {
+                gpio-hog;
+                gpios = <ASPEED_GPIO(O, 0) GPIO_ACTIVE_HIGH>;
+                output-high;
+                line-name = "PWR_OFF_CLKB";
+    };
+    pin_gpio_o1 {
+                gpio-hog;
+                gpios = <ASPEED_GPIO(O, 1) GPIO_ACTIVE_HIGH>;
+                output-high;
+                line-name = "SELF_PEB_HB";
+    };
+    pin_gpio_n0 {
+                gpio-hog;
+                gpios = <ASPEED_GPIO(N, 0) GPIO_ACTIVE_HIGH>;
+                output-high;
+                line-name = "FAN_PWM";
+    };
+    pin_gpio_n1 {
+                gpio-hog;
+                gpios = <ASPEED_GPIO(N, 1) GPIO_ACTIVE_HIGH>;
+                output-low;
+                line-name = "PWM_TO_FCB";
+    };
+    pin_gpio_a3 {
+                gpio-hog;
+                gpios = <ASPEED_GPIO(A, 3) GPIO_ACTIVE_HIGH>;
+                output-low;
+                line-name = "SD2_RSTN";
+    };
+};
+
+
+&gfx {
+	status = "okay";
+};
+
+&pinctrl {
+	aspeed,external-nodes = <&gfx &lhc>;
+};
+
+&wdt2 {
+	status = "okay";
+};
